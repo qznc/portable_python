@@ -4,19 +4,20 @@
 PYTHON_VERSION := 3.12.12
 
 .PHONY: default clean test
-default: python-$(PYTHON_VERSION)-static-x86_64-linux-musl.tar.gz
+
+default: python-$(PYTHON_VERSION)-x86_64-linux.tar.gz
 
 test: test.log
+	cat $<
 
-test.log: python-$(PYTHON_VERSION)-static-x86_64-linux-musl.tar.gz test.sh
-	./test.sh $< >$@ 2>&1
+test.log: python-$(PYTHON_VERSION)-x86_64-linux.tar.gz
+	./test.sh build/output >test.log 2>&1
 
-build/output/bin/python3.12: Containerfile.base build.sh
+build/output/bin/python3.12: Containerfile.base build.sh in_container/launcher.c in_container/build.sh
 	PYTHON_VERSION=$(PYTHON_VERSION) ./build.sh >build.log 2>&1
 
-python-$(PYTHON_VERSION)-static-x86_64-linux-musl.tar.gz: build/output/bin/python3.12 package.sh
+python-$(PYTHON_VERSION)-x86_64-linux.tar.gz: build/output/bin/python3.12 package.sh
 	PYTHON_VERSION=$(PYTHON_VERSION) ./package.sh >package.log 2>&1
 
 clean:
-	rm -rf test-python
-	rm -rf build *.tar.gz *.log
+	rm -rf build *.tar.gz *.log test-python
