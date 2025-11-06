@@ -1,0 +1,16 @@
+--- a/Lib/ctypes/__init__.py
++++ b/Lib/ctypes/__init__.py
+@@ -469,7 +469,12 @@ if _os.name == "nt":
+ elif _sys.platform == "cygwin":
+     pythonapi = PyDLL("libpython%d.%d.dll" % _sys.version_info[:2])
+ else:
+-    pythonapi = PyDLL(None)
++    try:
++        pythonapi = PyDLL(None)
++    except OSError:
++        # Static build - dynamic loading not supported
++        # Set to None to allow module import
++        pythonapi = None
+ 
+ 
+ if _os.name == "nt":

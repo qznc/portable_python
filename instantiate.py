@@ -24,7 +24,7 @@ def main():
 
     # Create structure and hardlink binaries
     (target_dir / "bin").mkdir(parents=True)
-    for binary in ["python3.12.bin", "python3"]:
+    for binary in ["python3.12", "python3"]:
         os.link(base_python / "bin" / binary, target_dir / "bin" / binary)
     (target_dir / "bin/python").symlink_to("python3")
 

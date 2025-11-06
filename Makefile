@@ -1,14 +1,22 @@
 # Copyright 2025 Andreas Zwinkau
 # SPDX-License-Identifier: Apache-2.0
 
+PYTHON_VERSION := 3.12.12
+
 .PHONY: default clean test
-default: base-python-3.12.12.tar.gz
+default: python-$(PYTHON_VERSION)-static-x86_64-linux-musl.tar.gz
 
-base-python-3.12.12.tar.gz: extract_python_from_alpine.sh build_tarball.sh
-	./extract_python_from_alpine.sh
+test: test.log
 
-test: base-python-3.12.12.tar.gz test.sh
-	./test.sh
+test.log: python-$(PYTHON_VERSION)-static-x86_64-linux-musl.tar.gz test.sh
+	./test.sh $< >$@ 2>&1
+
+build/output/bin/python3.12: Containerfile.base build.sh
+	PYTHON_VERSION=$(PYTHON_VERSION) ./build.sh >build.log 2>&1
+
+python-$(PYTHON_VERSION)-static-x86_64-linux-musl.tar.gz: build/output/bin/python3.12 package.sh
+	PYTHON_VERSION=$(PYTHON_VERSION) ./package.sh >package.log 2>&1
 
 clean:
-	rm -rf base-python base-python-3.12.12.tar.gz test-python
+	rm -rf test-python
+	rm -rf build *.tar.gz *.log

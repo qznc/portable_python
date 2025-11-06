@@ -1,3 +1,6 @@
-base-python/
 *.tar.gz
 test-python/
+*.log
+output/
+package/
+work/

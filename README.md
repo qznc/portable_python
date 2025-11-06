@@ -1,48 +1,33 @@
 # Portable Python
 
-Self-contained Python distribution for Linux. Works on any distro without system Python. Built from Alpine Linux with musl libc.
+Self-contained static Python distribution for Linux. Works on any distro without system dependencies. Statically linked from source with musl libc.
 
 ## Features
 
-- Works on any x86_64 Linux distro
-- Includes Python, pip, and all dependencies
+- Works on any x86_64 Linux distro (no system dependencies)
+- Statically linked binary with SSL, sqlite3, compression support
+- Includes pip pre-installed and working
 - Space-efficient hardlinked environments
 - Independent site-packages per environment
 - Instant environment creation
+- Full subprocess support (sys.executable works correctly)
 
 ## Quick Start
 
-Build from source:
-
 ```bash
-make
-```
+make  # build tarball from scratch
+tar -xzf python-3.12.12-static-x86_64-linux-musl.tar.gz  # extract tarball
+./python-static/bin/instantiate.py my-env  # create isolated environment
 
-Creates `base-python-3.12.12.tar.gz`.
-
-Create isolated environments:
-
-```bash
-tar -xvf base-python-3.12.12.tar.gz
-./base-python/bin/instantiate.py my-env
-```
-
-Use the environment:
-
-```bash
-# Run Python
+# Use the environment:
 ./my-env/bin/python3 --version
-
-# Install packages
 ./my-env/bin/pip install requests
-
-# Run scripts
 ./my-env/bin/python3 script.py
 ```
 
 ## How It Works
 
-`extract_python_from_alpine.sh` pulls Alpine Linux 3.22.0, extracts Python 3.12.12 with musl libc, and packages into a tarball.
+Python is compiled from source with static linking in an Alpine Linux container. All dependencies (OpenSSL, sqlite3, zlib, bzip2, xz, readline, ncurses) are statically linked into the binary. The result is a truly portable single binary.
 
 `instantiate.py` creates environments using hardlinks (no copying) with independent site-packages. Multiple environments share base files on disk.
 
@@ -65,11 +50,11 @@ Use the environment:
 Create multiple independent environments:
 
 ```bash
-./base-python/bin/instantiate.py dev-env
-./base-python/bin/instantiate.py prod-env
-./base-python/bin/instantiate.py test-env
+./python-static/bin/instantiate.py dev-env
+./python-static/bin/instantiate.py prod-env
+./python-static/bin/instantiate.py test-env
 
-# Each has independent packages
+# Each gets independent packages
 ./dev-env/bin/pip install pytest
 ./prod-env/bin/pip install gunicorn
 ./test-env/bin/pip install requests
@@ -77,17 +62,18 @@ Create multiple independent environments:
 
 ## Technical Details
 
-- Python 3.12.12, pip 25.1.1, Alpine 3.22.0
-- musl libc included
+- Python 3.12.12 statically linked with musl libc
+- OpenSSL, sqlite3, zlib, bzip2, xz, readline, ncurses statically linked
 - x86_64 Linux only
-- ~15MB tarball, ~49MB extracted
+- ~13MB tarball, ~39MB extracted
 
 ## Limitations
 
 - x86_64 Linux only (no ARM, macOS, Windows, BSD)
-- Some C extension packages may need compilation
+- Some C extension packages may need compilation for musl
 - musl libc may be incompatible with some glibc-specific packages
 - No Tkinter/GUI packages
+- ctypes has limited functionality (pythonapi not available in static build)
 
 ## License
 

@@ -1,0 +1,31 @@
+FROM alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+
+ENV TZ=UTC \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    SOURCE_DATE_EPOCH=1609459200
+
+RUN apk add --no-cache \
+    gcc=14.2.0-r6 \
+    g++=14.2.0-r6 \
+    make=4.4.1-r3 \
+    musl-dev=1.2.5-r10 \
+    linux-headers=6.14.2-r0 \
+    curl=8.14.1-r2 \
+    patch=2.8-r0 \
+    zlib-dev=1.3.1-r2 \
+    zlib-static=1.3.1-r2 \
+    openssl-dev=3.5.4-r0 \
+    openssl-libs-static=3.5.4-r0 \
+    sqlite-dev=3.49.2-r1 \
+    sqlite-static=3.49.2-r1 \
+    bzip2-dev=1.0.8-r6 \
+    bzip2-static=1.0.8-r6 \
+    xz-dev=5.8.1-r0 \
+    xz-static=5.8.1-r0 \
+    libffi-dev=3.4.8-r0 \
+    readline-dev=8.2.13-r1 \
+    readline-static=8.2.13-r1 \
+    ncurses-dev=6.5_p20250503-r0 \
+    ncurses-static=6.5_p20250503-r0 \
+    ca-certificates
