@@ -71,6 +71,23 @@ if [ ! -f "$INSTALL_DIR/bin/python$PYTHON_MAJOR_MINOR" ]; then
     make install
 fi
 
+echo "[INFO] Fixing sysconfigdata for C extension compilation..."
+# Remove -static from LDSHARED and BLDSHARED to allow building C extensions.
+# Note: This allows C extensions to compile successfully (avoiding linker errors),
+# but they still cannot be loaded at runtime due to "Dynamic loading not supported"
+# in fully static binaries. This provides clearer error messages to users.
+SYSCONFIGDATA=$(find "$INSTALL_DIR/lib/python$PYTHON_MAJOR_MINOR" -name "_sysconfigdata*.py" | head -n1)
+if [ -f "$SYSCONFIGDATA" ]; then
+    sed -i "s/'LDSHARED': 'gcc -shared -static'/'LDSHARED': 'gcc -shared'/g" "$SYSCONFIGDATA"
+    sed -i "s/'BLDSHARED': 'gcc -shared -static'/'BLDSHARED': 'gcc -shared'/g" "$SYSCONFIGDATA"
+    sed -i "s/'LDCXXSHARED': 'g++ -shared -static'/'LDCXXSHARED': 'g++ -shared'/g" "$SYSCONFIGDATA"
+    # Remove the compiled cache to force Python to recompile the config
+    rm -f "$INSTALL_DIR/lib/python$PYTHON_MAJOR_MINOR/__pycache__/_sysconfigdata*.pyc"
+    echo "[INFO] ✓ Fixed LDSHARED flags in $SYSCONFIGDATA"
+else
+    echo "[WARN] Could not find sysconfigdata file"
+fi
+
 echo "[INFO] Stripping debug symbols..."
 strip "$INSTALL_DIR/bin/python$PYTHON_MAJOR_MINOR" 2>/dev/null || true
 

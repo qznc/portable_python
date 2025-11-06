@@ -8,7 +8,7 @@ BUILD_DIR="$SCRIPT_DIR/build"
 OUTPUT_DIR="$BUILD_DIR/output"
 PACKAGE_DIR="$BUILD_DIR/package/python-static"
 TARBALL="$SCRIPT_DIR/python-${PYTHON_VERSION}-static-x86_64-linux-musl.tar.gz"
-EXPECTED_CHECKSUM="94f9fafcf3e51385907a2dc915af23d4a02f14dc33396d5c437e9ff5dc1db36a"
+EXPECTED_CHECKSUM="0ce13e47c057ecdfe1ea0ba12fbff12c80a79c35eea497951451ccceb2033fd4"
 
 info() { echo "$1"; }
 error() { echo "ERROR: $1"; exit 1; }
@@ -22,7 +22,7 @@ info "Python binary: $(sha256sum "$PYTHON_BIN" | cut -d' ' -f1)"
 info "Stdlib: $(find "$OUTPUT_DIR/lib/python${PYTHON_MAJOR_MINOR}" -type f | sort | xargs sha256sum | sha256sum | cut -d' ' -f1)"
 
 rm -rf "$SCRIPT_DIR/package"
-mkdir -p "$PACKAGE_DIR/bin" "$PACKAGE_DIR/lib"
+mkdir -p "$PACKAGE_DIR/bin" "$PACKAGE_DIR/lib" "$PACKAGE_DIR/include"
 
 info "Copying Python binary..."
 cp "$PYTHON_BIN" "$PACKAGE_DIR/bin/"
@@ -35,6 +35,11 @@ info "Copying standard library..."
 [ ! -d "$OUTPUT_DIR/lib/python${PYTHON_MAJOR_MINOR}" ] && \
     error "Python standard library not found in $OUTPUT_DIR/lib/"
 cp -a "$OUTPUT_DIR/lib/python${PYTHON_MAJOR_MINOR}" "$PACKAGE_DIR/lib/"
+
+info "Copying C headers..."
+[ ! -d "$OUTPUT_DIR/include/python${PYTHON_MAJOR_MINOR}" ] && \
+    error "Python headers not found in $OUTPUT_DIR/include/"
+cp -a "$OUTPUT_DIR/include/python${PYTHON_MAJOR_MINOR}" "$PACKAGE_DIR/include/"
 
 info "Copying instantiate.py..."
 cp "$SCRIPT_DIR/instantiate.py" "$PACKAGE_DIR/bin/"

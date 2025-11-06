@@ -70,7 +70,8 @@ Create multiple independent environments:
 ## Limitations
 
 - x86_64 Linux only (no ARM, macOS, Windows, BSD)
-- Some C extension packages may need compilation for musl
+- the fully static binary cannot load `.so` files at runtime: "Dynamic loading not supported"
+  - This is a fundamental limitation of fully static binaries with no dynamic linker because the library code cannot find symbols of the binary
 - musl libc may be incompatible with some glibc-specific packages
 - No Tkinter/GUI packages
 - ctypes has limited functionality (pythonapi not available in static build)
