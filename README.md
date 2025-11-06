@@ -47,6 +47,11 @@ A small kinda-static launcher dynamically loads libpython at runtime, enabling f
 | Single tarball | ✅ | ❌ | ❌ | ❌ |
 | Space efficient | ✅ | ✅ | ❌ | ❌ |
 
+There is [python-build-standalone](https://github.com/astral-sh/python-build-standalone) but the limitation
+[in their words](https://gregoryszorc.com/docs/python-build-standalone/main/quirks.html#former-quirks):
+
+> “Static Linking of musl libc Prevents Extension Module Library Loading”: Starting with the 20250311 release, the default musl distributions are dynamically linked by default, so extension modules should work properly. Note that these now **require a system-wide installation of the musl C library**.
+
 ## Advanced Usage
 
 Create multiple independent environments:
