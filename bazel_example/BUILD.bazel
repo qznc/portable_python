@@ -1,0 +1,15 @@
+genrule(
+    name = "my_python_distro",
+    srcs = ["@portable_python_upstream//file"],
+    outs = ["my_python_distro.tar.gz"],
+    cmd = """
+set -euxo pipefail
+tar -xzf "$(location @portable_python_upstream//file)"
+output/bin/python -m pip install --no-cache-dir \
+    requests==2.32.5
+# delete __pycache__ folders to save space
+find output/ -name "__pycache__" -type d -exec rm -rf {} +
+tar -czf "$(OUTS)" output/
+""",
+    tags = ["requires-network"],
+)
