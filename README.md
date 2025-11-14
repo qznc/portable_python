@@ -6,9 +6,7 @@ Self-contained Python distribution for Linux. Works on any distro without system
 
 - Works on any x86_64 Linux distro (no system dependencies)
 - Full dynamic C extension support (NumPy, pandas, etc. work!)
-- Tiny launcher + shared libpython
 - Includes pip pre-installed and working
-- Space-efficient hardlinked environments
 - Independent site-packages per environment
 - Instant environment creation
 - Full subprocess support (sys.executable works correctly)
@@ -31,6 +29,10 @@ tar -xzf python-3.12.12-x86_64-linux.tar.gz  # extract tarball
 Python is compiled from source in an Alpine Linux container.
 A small kinda-static launcher dynamically loads libpython at runtime, enabling full dynamic extension support while maintaining portability.
 
+The launcher tries to `dlopen` its bundled `libpython`;
+if that fails due to libc incompatibility, it re-execs itself through a bundled (or system) musl dynamic loader with an adjusted `LD_LIBRARY_PATH`, so the process restarts under musl and can successfully load the musl-linked Python library.
+This lets the same binary run Python portably across glibc, musl, and other libcs.
+
 `instantiate.py` creates environments using hardlinks (no copying) with independent site-packages. Multiple environments share base files on disk.
 
 ## Requirements
@@ -41,16 +43,11 @@ A small kinda-static launcher dynamically loads libpython at runtime, enabling f
 
 ## Comparison to Alternatives
 
-| Feature | This | venv | pyenv | Conda |
-|---------|------|------|-------|-------|
-| No system Python | ✅ | ❌ | ❌ | ✅ |
-| Single tarball | ✅ | ❌ | ❌ | ❌ |
-| Space efficient | ✅ | ✅ | ❌ | ❌ |
-
-There is [python-build-standalone](https://github.com/astral-sh/python-build-standalone) but the limitation
-[in their words](https://gregoryszorc.com/docs/python-build-standalone/main/quirks.html#former-quirks):
-
-> “Static Linking of musl libc Prevents Extension Module Library Loading”: Starting with the 20250311 release, the default musl distributions are dynamically linked by default, so extension modules should work properly. Note that these now **require a system-wide installation of the musl C library**.
+- Statically-linked Python: Possible with cPython itself but it breaks lots of essential libraries (e.g. cTypes) which rely on shared libraries.
+- venv: Builtin but it is dependent on its host Python. You *recreate* venvs, you can't copy them.
+- [portablepython.com](https://www.portablepython.com/): Seems to have had a similar goal but Windows-only.
+- [distroless](https://github.com/GoogleContainerTools/distroless) python: Achieves the same effect but requires containers.
+- [python-build-standalone](https://github.com/astral-sh/python-build-standalone) requires a musl system installation.
 
 ## Advanced Usage
 
