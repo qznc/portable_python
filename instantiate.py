@@ -24,11 +24,11 @@ def main():
     # Create structure and hardlink binaries
     (target_dir / "bin").mkdir(parents=True)
     for binary in ["python3.12", "python3"]:
-        os.link(base_python / "bin" / binary, target_dir / "bin" / binary)
+        shutil.copyfile(base_python / "bin" / binary, target_dir / "bin" / binary)
     (target_dir / "bin/python").symlink_to("python3")
 
     # Hardlink base libraries
-    _ = shutil.copytree(base_python / "lib", target_dir / "lib", copy_function=os.link)
+    _ = shutil.copytree(base_python / "lib", target_dir / "lib")
 
     # Create pyvenv.cfg
     (target_dir / "pyvenv.cfg").write_text(
