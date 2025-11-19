@@ -18,9 +18,8 @@ if [ ! -d "$OUTPUT_DIR" ]; then
     error "Output directory not found: $OUTPUT_DIR. Run ./build-launcher.sh first."
 fi
 
-echo "Copying instantiate.py..."
-cp "$SCRIPT_DIR/instantiate.py" "$OUTPUT_DIR/bin/"
-chmod +x "$OUTPUT_DIR/bin/instantiate.py"
+echo "Copying instantiate..."
+cp "$SCRIPT_DIR/instantiate.py" "$OUTPUT_DIR/lib/python3.12/ppd_instantiate.py"
 
 echo "Optimizing package size..."
 STDLIB_DIR="$OUTPUT_DIR/lib/python${PYTHON_MAJOR_MINOR}"

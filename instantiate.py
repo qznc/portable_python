@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# This is "Portable Python Distro - the Instantiate script"
 # Copyright 2025 Andreas Zwinkau
 # SPDX-License-Identifier: Apache-2.0
 
@@ -9,18 +10,16 @@ from pathlib import Path
 
 
 def main():
-    if len(sys.argv) != 2:
-        sys.exit("Usage: instantiate.py <target-directory>")
+    if len(sys.argv) == 1 or len(sys.argv) > 3:
+        sys.exit(
+            "Usage: instantiate.py <target-directory> <optional: requirements.txt>"
+        )
 
+    script_path = Path(sys.argv[0])  # lib/python3.12/x.py
+    base_python = script_path.parent.parent.parent.resolve()
     target_dir = Path(sys.argv[1]).resolve()
-    base_python = Path(__file__).parent.parent.resolve()
 
-    if not base_python.is_dir():
-        sys.exit("Error: Run 'make' first to create base Python.")
-    if target_dir.exists():
-        sys.exit(f"Error: Target directory already exists: {target_dir}")
-
-    print(f"Creating Python environment at {target_dir}")
+    assert base_python.is_dir(), base_python
 
     # Create structure and hardlink binaries
     (target_dir / "bin").mkdir(parents=True)
@@ -31,40 +30,30 @@ def main():
     # Hardlink base libraries
     _ = shutil.copytree(base_python / "lib", target_dir / "lib", copy_function=os.link)
 
-    # Create independent site-packages
-    site_packages = target_dir / "lib/python3.12/site-packages"
-    shutil.rmtree(site_packages, ignore_errors=True)
-    site_packages.mkdir(parents=True)
-
-    # Copy pip essentials
-    base_site = base_python / "lib/python3.12/site-packages"
-    for pkg in [
-        "pip",
-        "setuptools",
-        "packaging",
-        "_distutils_hack",
-        "distutils-precedence.pth",
-    ]:
-        if (src := base_site / pkg).exists():
-            (shutil.copytree if src.is_dir() else shutil.copy2)(
-                src, site_packages / pkg
-            )
-
-    # Create pip wrapper scripts
-    for name in ["pip", "pip3"]:
-        (target_dir / "bin" / name).write_text(
-            "#!/bin/bash\n"
-            'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"\n'
-            'exec "$SCRIPT_DIR/python3" -m pip "$@"\n'
-        )
-        (target_dir / "bin" / name).chmod(0o755)
-
     # Create pyvenv.cfg
     (target_dir / "pyvenv.cfg").write_text(
         f"home = {base_python / 'bin'}\ninclude-system-site-packages = false\n"
     )
 
-    print(f"Done! Use: {target_dir}/bin/python3 or {target_dir}/bin/pip")
+    if len(sys.argv) == 3:
+        requirements_file = Path(sys.argv[2])
+        assert requirements_file.is_file(), requirements_file
+        import subprocess
+
+        cmd = [
+            target_dir / "bin" / "python3",
+            "-m",
+            "pip",
+            "install",
+            "-r",
+            requirements_file,
+        ]
+        subprocess.run(cmd, check=True)
+        # clean up __pycache__ folders at target
+        for root, dirs, files in os.walk(target_dir):
+            for dir in dirs:
+                if dir == "__pycache__":
+                    shutil.rmtree(os.path.join(root, dir))
 
 
 if __name__ == "__main__":
