@@ -17,13 +17,19 @@ http_file(
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "portable_python",
-    urls = ["https://github.com/qznc/portable_python/releases/download/v0.3.0/python-3.12.12-x86_64-linux.tar.gz"],
-    sha256 = "660a8e012db92c33aec6914927a056e44f1e577ce18e8d8987b74b5c2d70d2d2",
+    urls = ["https://github.com/qznc/portable_python/releases/download/v0.4.0/python-3.12.12-x86_64-linux.tar.gz"],
+    sha256 = "9391f0cdf4e62b009cfb46fc5c44eebbebadba1261da11d09afa18cc77b4fb29",
+    strip_prefix = "output",
     build_file_content = """
 sh_binary(
     name = "python",
-    srcs = ["output/bin/python3"],
+    srcs = ["bin/python3"],
     data = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+filegroup(
+    name = "all",
+    srcs = glob(["**"]),
     visibility = ["//visibility:public"],
 )
 """,

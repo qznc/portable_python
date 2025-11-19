@@ -1,0 +1,5 @@
+title = "Example Docs"
+author = "Your Name"
+version = "1.0"
+project = "Portable Python Example Docs"
+html_theme = "pydata_sphinx_theme"

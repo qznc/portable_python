@@ -1,0 +1,13 @@
+load("//:pydistro.bzl", "python_derived_dist", "sphinx_build")
+
+python_derived_dist(
+    name = "my_python",
+    python_exe = "@portable_python//:python",
+    requirements_txt = "requirements.txt",
+)
+
+sphinx_build(
+    name = "sphinx_html",
+    srcs = glob(["docs/*"]),
+    python_distro = ":my_python",
+)
