@@ -7,7 +7,7 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 http_archive(
     name = "portable_python",
     urls = ["https://github.com/qznc/portable_python/releases/download/v0.4.1/python-3.12.12-x86_64-linux.tar.gz"],
-    sha256 = "492b13eadd3c48c8113df98f81275697d60711d7c2f74e9dbbe5287013cb1b00",
+    sha256 = "ed783d559806275a7e3bae4034e1ff867c43dc09932add23aeca7595f05f6c1b",
     strip_prefix = "python",
     build_file_content = """
 sh_binary(

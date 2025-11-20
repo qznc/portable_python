@@ -13,9 +13,10 @@ def _python_derived_dist_impl(ctx):
     launcher = ctx.actions.declare_file(ctx.label.name + ".sh")
     ctx.actions.write(
         output=launcher,
-        content="""#!/bin/bash
-exec "$PWD/{folder}/bin/python" "$@"
-""".format(folder=dist_dir.path),
+        content="""#!/bin/sh
+PY_EXE=$(find . -name "python3" -executable)
+exec "$PY_EXE" "$@"
+""",
         is_executable=True,
     )
     return DefaultInfo(
