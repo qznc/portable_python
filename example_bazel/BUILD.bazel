@@ -4,6 +4,7 @@ python_derived_dist(
     name = "my_python",
     python_exe = "@portable_python//:python",
     requirements_txt = "requirements.txt",
+    tags=["requires-network"],
 )
 
 sphinx_build(
