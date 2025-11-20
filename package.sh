@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eu
 
 # Package script for launcher approach Python distribution
 # Creates a tarball with static launcher + shared libpython
@@ -8,7 +8,7 @@ PYTHON_VERSION="${PYTHON_VERSION:-3.12.12}"
 PYTHON_MAJOR_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f1-2)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/build"
-OUTPUT_DIR="$BUILD_DIR/output"
+OUTPUT_DIR="$BUILD_DIR/python"
 PACKAGE_NAME="python-${PYTHON_VERSION}-x86_64-linux.tar.gz"
 PACKAGE_PATH="$SCRIPT_DIR/$PACKAGE_NAME"
 
