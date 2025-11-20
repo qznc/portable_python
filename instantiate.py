@@ -23,8 +23,9 @@ def main():
 
     # Create structure and hardlink binaries
     (target_dir / "bin").mkdir(parents=True)
-    for binary in ["python3.12", "python3"]:
+    for binary in ["python3"]:
         shutil.copyfile(base_python / "bin" / binary, target_dir / "bin" / binary)
+        os.chmod(target_dir / "bin" / binary, 0o755)
     (target_dir / "bin/python").symlink_to("python3")
 
     # Hardlink base libraries

@@ -1,35 +1,19 @@
 module(name = "using_portable_python")
 bazel_version = "8.4.2"
 
-
-## For creating your own extended Python distros
-http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
-http_file(
-    name = "portable_python_upstream",
-    urls = ["https://github.com/qznc/portable_python/releases/download/v0.3.0/python-3.12.12-x86_64-linux.tar.gz"],
-    sha256 = "660a8e012db92c33aec6914927a056e44f1e577ce18e8d8987b74b5c2d70d2d2",
-    downloaded_file_path = "python.tar.gz",
-)
-
-
 ## For using a portable Python distro
 # Example use: bazel run @portable_python//:python -- -m pydoc math
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "portable_python",
-    urls = ["https://github.com/qznc/portable_python/releases/download/v0.4.0/python-3.12.12-x86_64-linux.tar.gz"],
-    sha256 = "9391f0cdf4e62b009cfb46fc5c44eebbebadba1261da11d09afa18cc77b4fb29",
-    strip_prefix = "output",
+    urls = ["https://github.com/qznc/portable_python/releases/download/v0.4.1/python-3.12.12-x86_64-linux.tar.gz"],
+    sha256 = "492b13eadd3c48c8113df98f81275697d60711d7c2f74e9dbbe5287013cb1b00",
+    strip_prefix = "python",
     build_file_content = """
 sh_binary(
     name = "python",
     srcs = ["bin/python3"],
     data = glob(["**"]),
-    visibility = ["//visibility:public"],
-)
-filegroup(
-    name = "all",
-    srcs = glob(["**"]),
     visibility = ["//visibility:public"],
 )
 """,
